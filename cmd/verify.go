@@ -50,15 +50,19 @@ func validateCommand(cmd *cobra.Command, args []string) error {
 		}
 
 		hashInBytes := hash.Sum(nil)[:32]
-		fmt.Printf("SHA256 hash of file: %x\n", hashInBytes)
-		fmt.Printf("Wanted hash: 	     %s\n", strings.TrimSpace(properties[1]))
-		if strings.Compare(strings.TrimSpace(string(hashInBytes)), strings.TrimSpace(properties[1])) == 0 {
+		sha256sum := fmt.Sprintf("%x", hashInBytes)
+		fmt.Printf("SHA256 hash of file: %s\n", sha256sum)
+		fmt.Printf("Wanted SHA256 hash:  %s\n", strings.TrimSpace(properties[1]))
+		if strings.Compare(strings.TrimSpace(sha256sum), strings.TrimSpace(properties[1])) == 0 {
 			fmt.Println("Checksum Matches!")
+		} else {
+			fmt.Println("Checksum does not match!")
 		}
 		err = file.Close()
 		if err != nil {
 			return err
 		}
+		fmt.Println()
 	}
 
 	return nil
