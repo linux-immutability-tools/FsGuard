@@ -15,7 +15,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	
+
 	if strings.TrimSpace(executable) == "/usr/bin/init" { // TODO: Configuring init location
 		cmd.ValidateCommand(nil, []string{"/FsGuard/hashList"}) // TODO: allow configuring path to the hash list
 		return
