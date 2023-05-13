@@ -11,14 +11,14 @@ func NewVerifyCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:          "verify",
 		Short:        "Verify the root filesystem based on the given verification file",
-		RunE:         validateCommand,
+		RunE:         ValidateCommand,
 		SilenceUsage: true,
 	}
 
 	return cmd
 }
 
-func validateCommand(cmd *cobra.Command, args []string) error {
+func ValidateCommand(cmd *cobra.Command, args []string) error {
 	if len(args) == 0 {
 		return fmt.Errorf("no verification file specified")
 	}
@@ -27,7 +27,6 @@ func validateCommand(cmd *cobra.Command, args []string) error {
 	if err != nil {
 		panic(err)
 	}
-
 	// TODO: Actually verify the list with these values
 	signatureFile, err := core.GetSignatureFile(fsGuardPath)
 	if err != nil {
