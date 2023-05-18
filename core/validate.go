@@ -3,6 +3,7 @@ package core
 import (
 	"crypto/sha1"
 	"fmt"
+	"github.com/linux-immutability-tools/FsGuard/config"
 	"io"
 	"os"
 	"strconv"
@@ -43,9 +44,16 @@ func ValidatePath(recipePath string) error {
 
 			prop[1] = strings.TrimSpace(prop[1])
 
+			failed := false
+			errOut := ""
 			if err := validateChecksum(prop[0], sha1sum, prop[1]); err != nil {
-				errCh <- err
-				return
+				if config.QuitOnFail {
+					errCh <- err
+					return
+				} else {
+					failed = true
+					errOut = err.Error()
+				}
 			}
 
 			isSUID, err := strconv.ParseBool(prop[2])
@@ -54,8 +62,11 @@ func ValidatePath(recipePath string) error {
 				return
 			}
 			ValidateSUID(prop[0], isSUID)
-
-			fmt.Printf("[OK] %s - %s\n", prop[0], sha1sum)
+			if config.QuitOnFail || !failed {
+				fmt.Printf("[OK] %s - %s\n", prop[0], sha1sum)
+			} else {
+				fmt.Printf("%s\n", errOut)
+			}
 		}(properties)
 	}
 
