@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strconv"
 	"strings"
 	"sync"
 )
@@ -46,6 +47,13 @@ func ValidatePath(recipePath string) error {
 				errCh <- err
 				return
 			}
+
+			isSUID, err := strconv.ParseBool(prop[2])
+			if err != nil {
+				errCh <- fmt.Errorf("[FAIL] %s - Cannot find suid value", prop[0])
+				return
+			}
+			ValidateSUID(prop[0], isSUID)
 
 			fmt.Printf("[OK] %s - %s\n", prop[0], sha1sum)
 		}(properties)

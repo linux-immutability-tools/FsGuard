@@ -1,3 +1,4 @@
-/usr/sbin/bash e7a8ae9d53a83472304c3af3ae78848f5ade0f50bb947cf6aa7917a7d3f9a5c9 false
-/usr/sbin/tar c8148ac6a3b6ca6e7fd7a73e2d080de649e1ac3c1ead9e1ea1510397d3d2bf3a false
-/usr/sbin/ar totallyrealchecksum true
+/usr/sbin/bash 35eab9f2ffe2de924043fe288896c512ed353712 false
+/usr/sbin/tar 1d44d9a12776e7228a8153fae5fd2d2a84419ce1 false
+/usr/bin/sudo 7f1a9b5842d2962fa8fab3973d9ea929ce4106a5 true
+/usr/sbin/ar 683cf427c050ba0079106b7c015c1f6baf6b6c4e true
