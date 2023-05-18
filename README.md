@@ -41,9 +41,9 @@ cat /path/to/signature >> /path/to/FsGuard
 ## Launching FsGuard
 ### As an init
 FsGuard automatically starts the verification if it detects that it is a specific binary. 
-This binary name and path can be set with the `InitLocation` property in the [`config/config.go`](placeholder) file.
+This binary name and path can be set with the `InitLocation` property in the [`config/config.go`](https://github.com/linux-immutability-tools/FsGuard/blob/main/config/config.go) file.
 
-Additionally, FsGuard automatically starts a proper init once it completed the verification process. The init it launches can be controlled with the `PostInitExec` property in [`config/config.go`](placeholder).
+Additionally, FsGuard automatically starts a proper init once it completed the verification process. The init it launches can be controlled with the `PostInitExec` property in [`config/config.go`](https://github.com/linux-immutability-tools/FsGuard/blob/main/config/config.go).
 
 ### As a pre-init script
 FsGuard can also be started in a bash script that gets launched as an init, in this case, FsGuard works like a regular cli application and accepts the filelist location as an argument.
