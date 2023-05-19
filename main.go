@@ -27,12 +27,10 @@ func main() {
 	if strings.TrimSpace(executable) == config.InitLocation {
 		cmd.ValidateCommand(nil, []string{config.FileListPath})
 		if config.RunPostInit {
-			fmt.Println("here")
 			execErr := syscall.Exec(config.PostInitExec, []string{}, os.Environ())
 			if execErr != nil {
 				panic(execErr)
 			}
-			fmt.Printf("here2")
 			return
 		} else {
 			return
