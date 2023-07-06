@@ -22,7 +22,12 @@ jobs:
       run: |
         go build -o fsguard
 
-    - name: Upload a Release Asset
-      uses: softprops/action-gh-release@v1
+    - name: Run GoReleaser
+      uses: goreleaser/goreleaser-action@v4
+
+      if: startsWith(github.ref, 'refs/tags/')
       with:
-        files: fsguard
+        version: latest
+        args: release --clean
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
