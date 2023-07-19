@@ -16,8 +16,8 @@ func GetSignatureFile(binary string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	signatureFileIndex := bytes.Index(data, signatureFileSeparator) + len(signatureFileSeparator)
-	signatureFileEndIndex := bytes.Index(data, signatureFileEndSeparator) + len(signatureFileEndSeparator)
+	signatureFileIndex := bytes.LastIndex(data, signatureFileSeparator) + len(signatureFileSeparator)
+	signatureFileEndIndex := bytes.LastIndex(data, signatureFileEndSeparator) + len(signatureFileEndSeparator)
 	signatureFile := ""
 	for i := 0; i < signatureFileEndIndex-signatureFileIndex-len(signatureFileEndSeparator); i++ {
 		signatureFile = signatureFile + string(data[signatureFileIndex+i])
@@ -36,7 +36,7 @@ func GetSignatureHash(binary string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	signatureHashIndex := bytes.Index(data, signatureHashSeparator) + len(signatureHashSeparator)
+	signatureHashIndex := bytes.LastIndex(data, signatureHashSeparator) + len(signatureHashSeparator)
 
 	signatureHash := ""
 
