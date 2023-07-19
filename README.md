@@ -24,16 +24,17 @@ This Filelist can be placed anywhere, as long as FsGuard has access to it when i
 FsGuard expects a minisign signature and filelist to be appended to the binary. An example signature "set" can be found [here](https://github.com/linux-immutability-tools/FsGuard/blob/main/signatures).
 A signature set can be generated and added to FsGuard with these commands:
 ```bash
+# Create a new passwordless key pair
+minisign -WG
 # Signing the filelist
-minisign -G
 minisign -Sm /path/to/filelist
 
 # Generate the signature set
 touch /path/to/signature
-echo -e "----begin attach----" >> /path/to/signature
-cat /path/to/filelist.minisign >> /path/to/signature
-echo -e "----begin second attach----" >> /path/to/signature
-cat ./minisign.pub >> /path/to/signature
+echo -n "----begin attach----" >> /path/to/signature
+cat /path/to/filelist.minisig >> /path/to/signature
+echo -n "----begin second attach----" >> /path/to/signature
+tail -n1 ./minisign.pub >> /path/to/signature
 
 # Append the signature set to the FsGuard binary
 cat /path/to/signature >> /path/to/FsGuard
