@@ -3,12 +3,13 @@ package core
 import (
 	"crypto/sha1"
 	"fmt"
-	"github.com/linux-immutability-tools/FsGuard/config"
 	"io"
 	"os"
 	"strconv"
 	"strings"
 	"sync"
+
+	"github.com/linux-immutability-tools/FsGuard/config"
 )
 
 func ValidatePath(recipePath string) error {
@@ -29,6 +30,11 @@ func ValidatePath(recipePath string) error {
 		wg.Add(1)
 		go func(prop []string) {
 			defer wg.Done()
+			if _, err := os.Stat(prop[0]); os.IsNotExist(err) {
+				errCh <- fmt.Errorf("[FAIL] %s - File not found", prop[0])
+				return
+			}
+
 			file, err := os.Open(prop[0])
 			if err != nil {
 				errCh <- err
