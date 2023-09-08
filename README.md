@@ -3,7 +3,6 @@
     <p>FsGuard is a tool for verifying filesystem integrity at boot time.</p>
 </div>
 
-# FsGuard
 ## Building
 Dependencies:
 - go
