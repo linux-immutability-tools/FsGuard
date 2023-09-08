@@ -1,7 +1,10 @@
-# FsGuard
-Guarding your filesystem
+<div align="center">
+    <img src="fsguard.svg" alt="FsGuard Wrapper logo" width="200">
+    <p>FsGuard is a tool for verifying filesystem integrity at boot time.</p>
+</div>
 
-# Building
+# FsGuard
+## Building
 Dependencies:
 - go
 
@@ -10,8 +13,8 @@ simply run `build.sh` to build the project and append the testing signature.
 This will ensure that FsGuard is able to run properly by fetching signatures
 
 
-# Deploying
-## Filelist
+## Deploying
+### Filelist
 FsGuard needs a filelist containg the sha1sum and suid permission of every binary to scan, an example file can be found [here](https://github.com/linux-immutability-tools/FsGuard/blob/main/test_filelist).
 A bash oneliner to create an entry for this file could look like this:
 ```
@@ -20,7 +23,7 @@ echo $(sha1sum /path/to/binary | sed 's/  / /g') $(ls -al /path/to/binary | awk 
 
 This Filelist can be placed anywhere, as long as FsGuard has access to it when it launches.
 
-## Signing the Filelist
+### Signing the Filelist
 FsGuard expects a minisign signature and filelist to be appended to the binary. An example signature "set" can be found [here](https://github.com/linux-immutability-tools/FsGuard/blob/main/signatures).
 A signature set can be generated and added to FsGuard with these commands:
 ```bash
@@ -58,5 +61,5 @@ exec /path/to/init
 
 Make sure to launch the proper init using `exec`, some init systems like systemd will refuse to launch if they are not pid1, `exec` makes sure that the init script "drops" its pid and systemd is able to claim it.
 
-# Reporting issues
+## Reporting issues
 When reporting issues you encounter with FsGuard, please make sure to include the config.go file and how FsGuard gets launched.
