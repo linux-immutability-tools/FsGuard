@@ -1,4 +1,4 @@
-/usr/sbin/bash 35eab9f2ffe2de924043fe288896c512ed353712 false
-/usr/sbin/tar 1d44d9a12776e7228a8153fae5fd2d2a84419ce1 false
-/usr/bin/sudo 7f1a9b5842d2962fa8fab3973d9ea929ce4106a5 true
-/usr/sbin/ar sotrue,,, false
+/usr/sbin/bash,35eab9f2ffe2de924043fe288896c512ed353712,false
+/usr/sbin/tar,1d44d9a12776e7228a8153fae5fd2d2a84419ce1,false
+/usr/bin/sudo,7f1a9b5842d2962fa8fab3973d9ea929ce4106a5,true
+/usr/sbin/ar,badcheck,false
