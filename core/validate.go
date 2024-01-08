@@ -25,7 +25,7 @@ func ValidatePath(recipePath string) error {
 		if strings.TrimSpace(file) == "" {
 			continue
 		}
-		properties := strings.Split(file, " #FSG #")
+		properties := strings.Split(file, " #FSG# ")
 
 		wg.Add(1)
 		go func(prop []string) {
