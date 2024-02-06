@@ -1,16 +1,72 @@
 package core
 
 import (
+	"bufio"
+	"bytes"
 	"crypto/sha1"
 	"fmt"
 	"io"
 	"os"
-	"strconv"
+	"runtime"
 	"strings"
 	"sync"
-
-	"github.com/linux-immutability-tools/FsGuard/config"
 )
+
+func validatePathThread(dataCh chan string, errCh chan error, wg *sync.WaitGroup) {
+	defer wg.Done()
+
+	var file *os.File = nil
+	var err error = nil
+	for data := range dataCh {
+		if len(data) == 0 {
+			return
+		}
+
+		idx := strings.Index(data, " #FSG# ")
+		if idx == -1 {
+			errCh <- fmt.Errorf("[FAIL] %s - Malformed line", data)
+			continue
+		}
+
+		name := data[:idx]
+		sig := data[idx+7 : idx+47]
+		var isSUID bool
+		switch data[idx+54:] {
+		case "true":
+			isSUID = true
+		case "false":
+			isSUID = false
+		default:
+			errCh <- fmt.Errorf("[FAIL] %s - Cannot find suid value", data[idx+54:])
+			continue
+		}
+
+		if file, err = os.Open(name); err != nil {
+			if os.IsNotExist(err) {
+				errCh <- fmt.Errorf("[FAIL] %s - File not found", name)
+				continue
+			}
+			errCh <- err
+			continue
+		}
+
+		sha1sum, err := calculateHash(file)
+		if err != nil {
+			file.Close()
+			errCh <- err
+			continue
+		}
+		file.Close()
+
+		if err = validateChecksum(name, sha1sum, sig); err != nil {
+			errCh <- err
+			continue
+		}
+
+		ValidateSUID(name, isSUID)
+		fmt.Printf("[OK] %s - %s\n", name, sha1sum)
+	}
+}
 
 func ValidatePath(recipePath string) error {
 	data, err := os.ReadFile(recipePath)
@@ -19,70 +75,34 @@ func ValidatePath(recipePath string) error {
 	}
 
 	var wg sync.WaitGroup
-	errCh := make(chan error, 1)
+	threads := runtime.NumCPU()
+	errCh := make(chan error)
+	dataCh := make(chan string, threads)
 
-	for _, file := range strings.Split(string(data), "\n") {
-		if strings.TrimSpace(file) == "" {
-			continue
-		}
-		properties := strings.Split(file, " #FSG# ")
-
+	for i := 0; i < threads; i++ {
 		wg.Add(1)
-		go func(prop []string) {
-			defer wg.Done()
-			if _, err := os.Stat(prop[0]); os.IsNotExist(err) {
-				errCh <- fmt.Errorf("[FAIL] %s - File not found", prop[0])
-				return
-			}
+		go validatePathThread(dataCh, errCh, &wg)
+	}
 
-			file, err := os.Open(prop[0])
-			if err != nil {
-				errCh <- err
-				return
-			}
-			defer file.Close()
+	scanner := bufio.NewScanner(bytes.NewReader(data))
+	scanner.Split(bufio.ScanLines)
+	for scanner.Scan() {
+		dataCh <- scanner.Text()
+	}
 
-			sha1sum, err := calculateHash(file)
-			if err != nil {
-				errCh <- err
-				return
-			}
-
-			prop[1] = strings.TrimSpace(prop[1])
-
-			failed := false
-			errOut := ""
-			if err := validateChecksum(prop[0], sha1sum, prop[1]); err != nil {
-				if config.QuitOnFail {
-					errCh <- err
-					return
-				} else {
-					failed = true
-					errOut = err.Error()
-				}
-			}
-
-			isSUID, err := strconv.ParseBool(prop[2])
-			if err != nil {
-				errCh <- fmt.Errorf("[FAIL] %s - Cannot find suid value", prop[0])
-				return
-			}
-			ValidateSUID(prop[0], isSUID)
-			if config.QuitOnFail || !failed {
-				fmt.Printf("[OK] %s - %s\n", prop[0], sha1sum)
-			} else {
-				fmt.Printf("%s\n", errOut)
-			}
-		}(properties)
+	for i := 0; i < threads; i++ {
+		dataCh <- ""
 	}
 
 	go func() {
 		wg.Wait()
 		close(errCh)
+		close(dataCh)
 	}()
 
 	for err := range errCh {
 		if err != nil {
+			fmt.Println(err)
 			return err
 		}
 	}
