@@ -10,6 +10,8 @@ import (
 	"runtime"
 	"strings"
 	"sync"
+
+	"github.com/linux-immutability-tools/FsGuard/config"
 )
 
 func validatePathThread(dataCh chan string, errCh chan error, wg *sync.WaitGroup) {
@@ -58,13 +60,22 @@ func validatePathThread(dataCh chan string, errCh chan error, wg *sync.WaitGroup
 		}
 		file.Close()
 
+		failed := false
 		if err = validateChecksum(name, sha1sum, sig); err != nil {
-			errCh <- err
-			continue
+			if config.QuitOnFail {
+				errCh <- err
+				continue
+			} else {
+				failed = true
+			}
 		}
 
 		ValidateSUID(name, isSUID)
-		fmt.Printf("[OK] %s - %s\n", name, sha1sum)
+		if !failed {
+			fmt.Printf("[OK] %s - %s\n", name, sha1sum)
+		} else {
+			fmt.Printf("%s\n", err)
+		}
 	}
 }
 
