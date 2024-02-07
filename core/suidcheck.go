@@ -17,7 +17,6 @@ func ValidateSUID(file string, isSUID bool) {
 	} else if fileStat.Mode()&os.ModeSetuid == 0 && isSUID {
 		fmt.Printf("[FAIL] File %s has incorrect suid permission\n", file)
 		correctSUID(file, isSUID)
-	} else {
 	}
 }
 
